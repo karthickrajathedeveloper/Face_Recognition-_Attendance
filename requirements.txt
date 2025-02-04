@@ -1,0 +1,19 @@
+Install Dependencies
+
+! pip install opencv-python
+
+%%cmd
+where python
+
+%%cmd
+pip install cmake
+
+%%cmd
+python --version
+
+%%cmd
+
+pip install "E:\karthickraja\Embedded\Karthick\Python\face_Recognition\dlib-19.22.1-cp39-cp39-win_amd64.whl"
+
+%%cmd
+pip install face-recognition
