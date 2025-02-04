@@ -119,9 +119,3 @@ For any inquiries, please contact me at [M.Karthickraja](https://github.com/kart
 
 ## License
 This project is licensed under the MIT License.
-
-
-
-## License
-This project is licensed under the MIT License.
-
