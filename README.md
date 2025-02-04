@@ -115,7 +115,7 @@ python face_recognition_attendance.py
 
 ## Contact
 
-For any inquiries, please contact me at [M.Karthickraja](https://github.com/karthickrajathedevelope)
+For any inquiries, please contact me at [M.Karthickraja](https://github.com/karthickrajathedeveloper)
 
 ## License
 This project is licensed under the MIT License.
