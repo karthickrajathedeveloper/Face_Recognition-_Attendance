@@ -1,5 +1,7 @@
 Install Dependencies
 
+Create a folder as "registered_faces"
+
 ! pip install opencv-python
 
 %%cmd
