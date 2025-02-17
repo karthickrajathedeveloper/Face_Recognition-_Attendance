@@ -16,3 +16,9 @@ CREATE TABLE IF NOT EXISTS attendance (
     time TIME,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+ALTER TABLE users ADD COLUMN photo LONGBLOB;
+
+Select * from users;
+DELETE FROM users WHERE id = 1;
+
+set foreign_key_checks = 0;
