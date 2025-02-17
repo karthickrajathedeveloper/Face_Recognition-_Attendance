@@ -1,6 +1,6 @@
-# '''
-# Avoid duplicate
-# '''
+# # '''
+# # Avoid duplicate
+# # '''
 
 import cv2
 import numpy as np
@@ -8,7 +8,7 @@ import face_recognition
 import mysql.connector
 from datetime import datetime
 import tkinter as tk
-from tkinter import simpledialog, messagebox, Toplevel
+from tkinter import simpledialog, messagebox, Toplevel, Canvas, Scrollbar, Frame
 from PIL import Image, ImageTk
 import pickle
 
@@ -151,49 +151,53 @@ class FaceRecognitionApp:
                     messagebox.showwarning("Unregistered", "Person not registered!")
 
     def show_employees(self):
-        """Show registered employees with their names and photos"""
+        """Show registered employees with scrollable view"""
         employee_window = Toplevel(self.root)
         employee_window.title("Registered Employees")
         employee_window.geometry("500x500")
         employee_window.configure(bg="white")
+
+        canvas = Canvas(employee_window)
+        scrollbar = Scrollbar(employee_window, orient="vertical", command=canvas.yview)
+        scrollable_frame = Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
 
         cursor.execute("SELECT name, photo FROM users")
         records = cursor.fetchall()
 
         for name, photo_blob in records:
             if photo_blob is None:
-                tk.Label(employee_window, text=f"{name} (No Photo)").pack()
-                continue  # Skip if no photo
+                tk.Label(scrollable_frame, text=f"{name} (No Photo)").pack()
+                continue
 
-            # Convert the binary photo to an image
             image = cv2.imdecode(np.frombuffer(photo_blob, np.uint8), cv2.IMREAD_COLOR)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
             img_tk = ImageTk.PhotoImage(image)
 
-            # Display name and photo
-            label = tk.Label(employee_window, text=name, image=img_tk, compound="top")
-            label.img_tk = img_tk  # Keep reference to avoid garbage collection
+            label = tk.Label(scrollable_frame, text=name, image=img_tk, compound="top")
+            label.img_tk = img_tk
             label.pack()
+
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     def delete_face(self):
         """Delete a registered face from the database"""
         name = simpledialog.askstring("Delete Face", "Enter Name to Delete:")
         if name:
-            # Check if the user exists
-            cursor.execute('SELECT id FROM users WHERE name = %s', (name,))
-            user = cursor.fetchone()
-
-            if user:
-                user_id = user[0]
-                confirm = messagebox.askquestion("Delete", f"Are you sure you want to delete {name}?", icon='warning')
-                if confirm == 'yes':
-                    cursor.execute('DELETE FROM attendance WHERE user_id = %s', (user_id,))
-                    cursor.execute('DELETE FROM users WHERE id = %s', (user_id,))
-                    conn.commit()
-                    messagebox.showinfo("Success", f"{name} deleted successfully!")
-            else:
-                messagebox.showerror("Error", "Name not found!")
+            cursor.execute('DELETE FROM users WHERE name = %s', (name,))
+            conn.commit()
+            messagebox.showinfo("Success", f"{name} deleted successfully!")
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -201,3 +205,4 @@ if __name__ == "__main__":
     root.mainloop()
 
     conn.close()
+
